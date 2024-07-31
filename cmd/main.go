@@ -9,7 +9,7 @@ import (
 )
 
 func main() {
-	dbURL := "postgres://postgres:7212Hey)@localhost:db/store"
+	dbURL := "postgres://postgres:7212Hey)@db:5432/store"
 	db := e_commerce.ConnectToDatabase(dbURL)
 	defer func() {
 		sqlDB, err := db.DB()

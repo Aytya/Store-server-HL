@@ -36,7 +36,7 @@ func (h *Handler) InitRoutes() *gin.Engine {
 		user.DELETE("/:id", h.user.DeleteUser)
 		user.GET("/:id", h.user.GetUserByID)
 		user.GET("/search/:name", h.user.SearchUsersByName)
-		user.GET("search/email/:email", h.user.SearchUsersByEmail)
+		user.GET("/search/email/:email", h.user.SearchUsersByEmail)
 	}
 
 	product := router.Group("/products")
