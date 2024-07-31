@@ -1,6 +1,6 @@
 # Go - Service for managing an online store
 
-### REST API for managing an online store that includes several microservices: Users, Products, Orders, Payments and API Gateway.. The service support CRUD operations, published on GitHub, embedded in Render, and run using Docker Compose and Makefile.
+### REST API for managing an online store that includes several microservices: Users, Products, Orders, Payments and API Gateway. The service support CRUD operations, published on GitHub, embedded in Render, and run using Docker Compose and Makefile.
 
 ## Getting Started
 
