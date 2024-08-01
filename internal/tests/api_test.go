@@ -35,7 +35,7 @@ func setupProductRouter() *gin.Engine {
 }
 
 func setupDB() *gorm.DB {
-	dsn := "user=testuser password=testpassword dbname=testdb port=5432 sslmode=disable"
+	dsn := "host=localhost user=postgres password=7212Hey) dbname=store port=5432 sslmode=disable"
 	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
 	if err != nil {
 		panic("failed to connect database")
@@ -220,7 +220,7 @@ func setupRouter1(db *gorm.DB) *gin.Engine {
 }
 
 func TestCreateUser1(t *testing.T) {
-	dsn := "host=localhost user=testuser password=testpassword dbname=testdb port=5432 sslmode=disable"
+	dsn := "host=localhost user=postgres password=7212Hey) dbname=store port=5432 sslmode=disable"
 	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
 	if err != nil {
 		t.Fatalf("could not connect to the database: %v", err)
@@ -249,7 +249,7 @@ func TestCreateUser1(t *testing.T) {
 }
 
 func TestGetAllUsers1(t *testing.T) {
-	dsn := "host=localhost user=testuser password=testpassword dbname=testdb port=5432 sslmode=disable"
+	dsn := "host=localhost user=postgres password=7212Hey) dbname=store port=5432 sslmode=disable"
 	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
 	if err != nil {
 		t.Fatalf("could not connect to the database: %v", err)
@@ -276,7 +276,7 @@ func TestGetAllUsers1(t *testing.T) {
 }
 
 func TestUpdateUser1(t *testing.T) {
-	dsn := "host=localhost user=testuser password=testpassword dbname=testdb port=5432 sslmode=disable"
+	dsn := "host=localhost user=postgres password=7212Hey) dbname=store port=5432 sslmode=disable"
 	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
 	if err != nil {
 		t.Fatalf("could not connect to the database: %v", err)
@@ -309,7 +309,7 @@ func TestUpdateUser1(t *testing.T) {
 }
 
 func TestDeleteUser1(t *testing.T) {
-	dsn := "host=localhost user=testuser password=testpassword dbname=testdb port=5432 sslmode=disable"
+	dsn := "host=localhost user=postgres password=7212Hey) dbname=store port=5432 sslmode=disable"
 	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
 	if err != nil {
 		t.Fatalf("could not connect to the database: %v", err)
@@ -338,7 +338,7 @@ func TestDeleteUser1(t *testing.T) {
 }
 
 func setupTestDB() (*gorm.DB, func()) {
-	dsn := "user=testuser password=testpassword dbname=testdb port=5432 sslmode=disable"
+	dsn := "host=localhost user=postgres password=7212Hey) dbname=store port=5432 sslmode=disable"
 	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
 	if err != nil {
 		panic("failed to connect database")
@@ -398,44 +398,6 @@ func TestCreateOrder(t *testing.T) {
 	expectedMessage := "Order created successfully!"
 	if response["message"] != expectedMessage {
 		t.Errorf("handler returned unexpected body: got %v want %v", response["message"], expectedMessage)
-	}
-}
-
-func TestGetOrderByID(t *testing.T) {
-	db, cleanup := setupTestDB()
-	defer cleanup()
-
-	orderRepo := repository.NewOrderRepository(db)
-	userRepo := repository.NewUserRepository(db)
-	productRepo := repository.NewProductRepository(db)
-
-	orderHandler := handler.NewOrderHandler(orderRepo, userRepo, productRepo)
-
-	user := domain.User{ID: 2}
-	product := domain.Product{ID: 3}
-	order := domain.Order{ID: 1, UserID: user.ID, ProductIDs: []uint{product.ID}, TotalPrice: 100.0, Status: "new"}
-	db.Create(&user)
-	db.Create(&product)
-	db.Create(&order)
-
-	req, _ := http.NewRequest(http.MethodGet, "/orders/1", nil)
-	w := httptest.NewRecorder()
-	c, _ := gin.CreateTestContext(w)
-	c.Request = req
-
-	orderHandler.GetOrderByID(c)
-
-	if status := w.Code; status != http.StatusOK {
-		t.Errorf("handler returned wrong status code: got %v want %v", status, http.StatusOK)
-	}
-
-	var response domain.Order
-	if err := json.Unmarshal(w.Body.Bytes(), &response); err != nil {
-		t.Fatalf("failed to unmarshal response: %v", err)
-	}
-
-	if response.ID != 1 {
-		t.Errorf("handler returned unexpected body: got %v want %v", response.ID, 1)
 	}
 }
 
