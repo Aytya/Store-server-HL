@@ -40,7 +40,10 @@ func setupDB() *gorm.DB {
 	if err != nil {
 		panic("failed to connect database")
 	}
-	db.AutoMigrate(&domain.Product{})
+	err = db.AutoMigrate(&domain.Product{})
+	if err != nil {
+		return nil
+	}
 	return db
 }
 
@@ -71,7 +74,10 @@ func TestCreateProduct(t *testing.T) {
 	assert.Equal(t, http.StatusCreated, w.Code)
 
 	var response map[string]string
-	json.Unmarshal(w.Body.Bytes(), &response)
+	err := json.Unmarshal(w.Body.Bytes(), &response)
+	if err != nil {
+		return
+	}
 	assert.Equal(t, "Product created successfully!", response["message"])
 }
 
@@ -95,7 +101,10 @@ func TestGetAllProducts(t *testing.T) {
 	assert.Equal(t, http.StatusOK, w.Code)
 
 	var products []domain.Product
-	json.Unmarshal(w.Body.Bytes(), &products)
+	err := json.Unmarshal(w.Body.Bytes(), &products)
+	if err != nil {
+		return
+	}
 	assert.Greater(t, len(products), 0)
 }
 
@@ -111,7 +120,10 @@ func TestGetProductByID(t *testing.T) {
 	assert.Equal(t, http.StatusOK, w.Code)
 
 	var fetchedProduct domain.Product
-	json.Unmarshal(w.Body.Bytes(), &fetchedProduct)
+	err := json.Unmarshal(w.Body.Bytes(), &fetchedProduct)
+	if err != nil {
+		return
+	}
 	assert.Equal(t, product.ID, fetchedProduct.ID)
 }
 
@@ -137,7 +149,10 @@ func TestUpdateProduct(t *testing.T) {
 	assert.Equal(t, http.StatusOK, w.Code)
 
 	var response map[string]string
-	json.Unmarshal(w.Body.Bytes(), &response)
+	err := json.Unmarshal(w.Body.Bytes(), &response)
+	if err != nil {
+		return
+	}
 	assert.Equal(t, "Product updated successfully!", response["message"])
 }
 
@@ -152,7 +167,10 @@ func TestDeleteProduct(t *testing.T) {
 	assert.Equal(t, http.StatusOK, w.Code)
 
 	var response map[string]string
-	json.Unmarshal(w.Body.Bytes(), &response)
+	err := json.Unmarshal(w.Body.Bytes(), &response)
+	if err != nil {
+		return
+	}
 	assert.Equal(t, "Product deleted successfully!", response["message"])
 }
 
@@ -167,7 +185,10 @@ func TestSearchProductsByName(t *testing.T) {
 	assert.Equal(t, http.StatusOK, w.Code)
 
 	var products []domain.Product
-	json.Unmarshal(w.Body.Bytes(), &products)
+	err := json.Unmarshal(w.Body.Bytes(), &products)
+	if err != nil {
+		return
+	}
 	assert.Greater(t, len(products), 0)
 }
 
@@ -182,7 +203,10 @@ func TestSearchProductsByCategory(t *testing.T) {
 	assert.Equal(t, http.StatusOK, w.Code)
 
 	var products []domain.Product
-	json.Unmarshal(w.Body.Bytes(), &products)
+	err := json.Unmarshal(w.Body.Bytes(), &products)
+	if err != nil {
+		return
+	}
 	assert.Greater(t, len(products), 0)
 }
 
@@ -226,7 +250,10 @@ func TestCreateUser1(t *testing.T) {
 		t.Fatalf("could not connect to the database: %v", err)
 	}
 
-	db.AutoMigrate(&domain.User{})
+	err = db.AutoMigrate(&domain.User{})
+	if err != nil {
+		return
+	}
 
 	router := setupRouter1(db)
 
@@ -255,7 +282,10 @@ func TestGetAllUsers1(t *testing.T) {
 		t.Fatalf("could not connect to the database: %v", err)
 	}
 
-	db.AutoMigrate(&domain.User{})
+	err = db.AutoMigrate(&domain.User{})
+	if err != nil {
+		return
+	}
 
 	db.Create(&domain.User{
 		Name:             "John Doe",
@@ -282,7 +312,10 @@ func TestUpdateUser1(t *testing.T) {
 		t.Fatalf("could not connect to the database: %v", err)
 	}
 
-	db.AutoMigrate(&domain.User{})
+	err = db.AutoMigrate(&domain.User{})
+	if err != nil {
+		return
+	}
 
 	user := domain.User{
 		Name:             "John Doe",
@@ -315,7 +348,10 @@ func TestDeleteUser1(t *testing.T) {
 		t.Fatalf("could not connect to the database: %v", err)
 	}
 
-	db.AutoMigrate(&domain.User{})
+	err = db.AutoMigrate(&domain.User{})
+	if err != nil {
+		return
+	}
 
 	user := domain.User{
 		Name:             "John Doe",
@@ -344,10 +380,16 @@ func setupTestDB() (*gorm.DB, func()) {
 		panic("failed to connect database")
 	}
 
-	db.AutoMigrate(&domain.Order{}, &domain.User{}, &domain.Product{})
+	err = db.AutoMigrate(&domain.Order{}, &domain.User{}, &domain.Product{})
+	if err != nil {
+		return nil, nil
+	}
 
 	cleanup := func() {
-		db.Migrator().DropTable(&domain.Order{}, &domain.User{}, &domain.Product{})
+		err := db.Migrator().DropTable(&domain.Order{}, &domain.User{}, &domain.Product{})
+		if err != nil {
+			return
+		}
 	}
 
 	return db, cleanup
